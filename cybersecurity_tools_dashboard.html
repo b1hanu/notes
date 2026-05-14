@@ -1,0 +1,478 @@
+
+<h2 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Cyber Security Tools Dashboard — market mein commonly used tools, their success rates, and how to counter them</h2>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.top-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:1rem 0 1.2rem}
+.search-wrap{flex:1;min-width:180px;position:relative}
+.search-wrap input{width:100%;padding:8px 12px 8px 32px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);font-size:13px}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;opacity:.4}
+.cat-pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{padding:5px 12px;border:0.5px solid var(--color-border-secondary);border-radius:20px;font-size:12px;cursor:pointer;color:var(--color-text-secondary);background:transparent;transition:all .12s}
+.pill.on{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-primary);font-weight:500}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.2rem}
+.stat{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.75rem 1rem}
+.stat-val{font-size:22px;font-weight:500;color:var(--color-text-primary)}
+.stat-lbl{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:1.5rem}
+.tool-card{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:.9rem 1rem;cursor:pointer;transition:border-color .12s,background .12s}
+.tool-card:hover{border-color:var(--color-border-primary);background:var(--color-background-secondary)}
+.tool-card.active{border-width:1.5px}
+.tc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px}
+.tc-icon{width:34px;height:34px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0}
+.tc-name{font-size:13.5px;font-weight:500;color:var(--color-text-primary);line-height:1.3}
+.tc-cat{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.tc-purpose{font-size:12px;color:var(--color-text-secondary);line-height:1.55;margin-bottom:10px}
+.rate-row{display:flex;align-items:center;gap:8px}
+.rate-bar-bg{flex:1;height:5px;background:var(--color-border-tertiary);border-radius:3px;overflow:hidden}
+.rate-bar-fill{height:5px;border-radius:3px;transition:width .6s ease}
+.rate-pct{font-size:12px;font-weight:500;min-width:30px;text-align:right}
+.detail-panel{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:1.5rem}
+.dp-header{padding:1.1rem 1.25rem;display:flex;align-items:center;gap:14px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.dp-icon-big{width:46px;height:46px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500;flex-shrink:0}
+.dp-title{font-size:16px;font-weight:500;color:var(--color-text-primary)}
+.dp-sub{font-size:12px;color:var(--color-text-secondary);margin-top:3px}
+.dp-body{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.dp-col{padding:1.1rem 1.25rem}
+.dp-col+.dp-col{border-left:0.5px solid var(--color-border-tertiary)}
+.dp-section{margin-bottom:1rem}
+.dp-section:last-child{margin-bottom:0}
+.dp-lbl{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.dp-text{font-size:13px;color:var(--color-text-secondary);line-height:1.7}
+.dp-text strong{color:var(--color-text-primary);font-weight:500}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.5rem}
+.tag{font-size:11px;padding:3px 8px;border-radius:20px;font-weight:500}
+.tag-blue{background:#E6F1FB;color:#0C447C}
+.tag-red{background:#FCEBEB;color:#791F1F}
+.tag-green{background:#EAF3DE;color:#27500A}
+.tag-amber{background:#FAEEDA;color:#633806}
+.tag-purple{background:#EEEDFE;color:#3C3489}
+.tag-teal{background:#E1F5EE;color:#085041}
+.counter-list{list-style:none;padding:0}
+.counter-list li{font-size:13px;color:var(--color-text-secondary);line-height:1.65;padding:5px 0;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;gap:8px;align-items:flex-start}
+.counter-list li:last-child{border-bottom:none}
+.ci{width:16px;height:16px;border-radius:50%;background:#EAF3DE;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.ci svg{width:8px;height:8px}
+.rate-big{display:flex;align-items:baseline;gap:6px;margin-bottom:8px}
+.rate-num{font-size:28px;font-weight:500}
+.rate-lbl{font-size:13px;color:var(--color-text-secondary)}
+.rate-bar-big{height:8px;background:var(--color-border-tertiary);border-radius:4px;overflow:hidden;margin-bottom:6px}
+.rate-bar-big-fill{height:8px;border-radius:4px}
+.risk-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;margin-top:6px}
+.cmd-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 12px;font-family:var(--font-mono);font-size:12px;color:var(--color-text-primary);margin-top:6px;line-height:1.7;white-space:pre-wrap;word-break:break-all}
+.ask-btn{display:inline-flex;align-items:center;gap:4px;margin-top:10px;padding:6px 14px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:transparent;color:var(--color-text-secondary);font-size:12px;cursor:pointer}
+.ask-btn:hover{background:var(--color-background-secondary)}
+.empty{text-align:center;padding:2rem;color:var(--color-text-tertiary);font-size:13px}
+</style>
+
+<div class="top-bar">
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4"/><path d="M10 10l3 3"/></svg>
+    <input type="text" placeholder="Search tools..." id="searchInput" oninput="filterTools()">
+  </div>
+  <div class="cat-pills" id="catPills"></div>
+</div>
+
+<div class="stats-row" id="statsRow"></div>
+<div class="tools-grid" id="toolsGrid"></div>
+<div class="detail-panel" id="detailPanel" style="display:none"></div>
+
+<script>
+const TOOLS = [
+  {id:"nmap",name:"Nmap",abbr:"NM",cat:"Reconnaissance",color:"blue",
+   purpose:"Network discovery & port scanning — maps open ports, services, OS fingerprinting",
+   success:92,risk:"High",
+   platform:"Linux, Windows, macOS",
+   cmd:"nmap -sV -O -A 192.168.1.0/24\nnmap --script vuln target.com",
+   usedBy:"Pentesters, sysadmins, red teams",
+   tags:["Port scanner","OS detection","Free/Open source","Industry standard"],
+   ttags:["blue","blue","green","green"],
+   desc:"Nmap (Network Mapper) is the most widely used network discovery tool. It sends specially crafted packets and analyzes responses to detect hosts, open ports, running services, and OS type. Used in recon phase of every pentest.",
+   counters:["Deploy a NIDS (Snort/Suricata) — detects characteristic Nmap scan patterns","Firewall: block unused ports, log all scan attempts from single IPs","Implement port knocking — ports only open after secret sequence","Rate-limit connections per IP to slow down and alert on aggressive scans","Deploy honeypot ports — any connection to closed ports = instant alert","Use cloud WAF / DDoS protection that filters port probe traffic at edge"]},
+
+  {id:"metasploit",name:"Metasploit",abbr:"MS",cat:"Exploitation",color:"red",
+   purpose:"Exploitation framework — automates known vulnerabilities, post-exploitation, payload delivery",
+   success:85,risk:"Critical",
+   platform:"Linux (Kali), Windows",
+   cmd:"msfconsole\nuse exploit/windows/smb/ms17_010_eternalblue\nset RHOSTS target\nexploit",
+   usedBy:"Pentesters, red teams, threat actors",
+   tags:["Exploit framework","Post-exploitation","Free + Pro","Most used tool"],
+   ttags:["red","red","green","amber"],
+   desc:"Metasploit Framework is the world's most used penetration testing tool with 2000+ exploits. Automates attack steps from initial exploitation to post-exploitation (privilege escalation, lateral movement, persistence). Commercial version: Metasploit Pro.",
+   counters:["Patch all known CVEs promptly — Metasploit exploits mostly target known vulnerabilities","Deploy EDR (CrowdStrike, SentinelOne) — detects Meterpreter shellcode behavior","Network segmentation — limit blast radius of successful exploitation","Disable unnecessary services (SMB v1, RDP, telnet) that Metasploit commonly exploits","Use EDR memory scanning — Meterpreter runs in memory (fileless)","Enable Windows Defender Credential Guard to block credential dumping modules"]},
+
+  {id:"burpsuite",name:"Burp Suite",abbr:"BS",cat:"Web Testing",color:"amber",
+   purpose:"Web application security testing — proxy, scanner, intruder for web vulnerabilities (SQLi, XSS, CSRF)",
+   success:88,risk:"High",
+   platform:"Windows, Linux, macOS",
+   cmd:"Setup proxy: 127.0.0.1:8080\nIntercept → Modify requests\nScanner: Active scan target",
+   usedBy:"Web pentesters, bug bounty hunters, security engineers",
+   tags:["Web proxy","Active scanner","Industry standard","Bug bounty"],
+   ttags:["amber","amber","green","blue"],
+   desc:"Burp Suite is the go-to tool for web application security testing. Its intercepting proxy sits between browser and web app, capturing all HTTP/S traffic for analysis and manipulation. Used in virtually every web application penetration test.",
+   counters:["WAF (ModSecurity, Cloudflare WAF) — blocks SQLi and XSS patterns Burp scanner sends","Input validation & output encoding — prevent injection attacks at source","CSP headers — prevents XSS exploitation even if injected","Rate limiting on web app endpoints — slows Burp Intruder brute force","Bot detection (CAPTCHA, behavioral analysis) — detects automated scanning","DAST tools on your own app before attackers do — find issues first"]},
+
+  {id:"wireshark",name:"Wireshark",abbr:"WS",cat:"Reconnaissance",color:"blue",
+   purpose:"Network protocol analyzer — captures and analyzes all network traffic in real time",
+   success:78,risk:"Medium",
+   platform:"Windows, Linux, macOS",
+   cmd:"wireshark -i eth0\nFilter: http.request.method == POST\nFilter: tcp.port == 21",
+   usedBy:"Network admins, forensic analysts, attackers on LAN",
+   tags:["Packet capture","Free/Open source","Protocol analysis","Forensics"],
+   ttags:["blue","green","blue","purple"],
+   desc:"Wireshark is the world's most popular network protocol analyzer. Captures live network traffic or reads PCAP files. On unencrypted networks (HTTP, FTP, Telnet), credentials and data are visible in plaintext. Critical tool for network forensics and incident response.",
+   counters:["Encrypt all traffic — TLS 1.3 for web, SSH for admin, WPA3 for WiFi","Network switch port security — prevents rogue devices capturing traffic","802.1X port authentication — only authorized devices on network","HTTPS everywhere — even if captured, data is encrypted","VPN for all remote workers — encrypts entire tunnel","Managed switches with private VLANs prevent inter-client sniffing"]},
+
+  {id:"sqlmap",name:"sqlmap",abbr:"SM",cat:"Web Testing",color:"amber",
+   purpose:"Automated SQL injection detection and exploitation — dumps databases, bypasses auth",
+   success:80,risk:"High",
+   platform:"Linux, Windows, macOS",
+   cmd:"sqlmap -u 'http://site.com/page?id=1' --dbs\nsqlmap -u URL --dump -T users",
+   usedBy:"Web pentesters, attackers targeting databases",
+   tags:["SQL injection","Database dump","Automated","Auth bypass"],
+   ttags:["red","red","amber","red"],
+   desc:"sqlmap is the leading automated SQL injection tool. Detects and exploits SQLi vulnerabilities across 6 injection types and 5 database backends (MySQL, MSSQL, Oracle, PostgreSQL, SQLite). Can dump entire databases, read/write files, execute OS commands.",
+   counters:["Parameterized queries / prepared statements — completely eliminates SQLi","Input validation — whitelist allowed characters, reject special chars","WAF with SQLi rules — blocks sqlmap payloads","Least privilege on DB accounts — app user should only have SELECT, not DROP","Error handling — never expose raw SQL error messages to users","Rate limiting + CAPTCHA on forms — slows automated injection testing"]},
+
+  {id:"hydra",name:"Hydra",abbr:"HY",cat:"Password Attack",color:"red",
+   purpose:"Online password brute-force — SSH, FTP, HTTP, RDP, MySQL — 50+ protocols supported",
+   success:65,risk:"High",
+   platform:"Linux, Windows",
+   cmd:"hydra -L users.txt -P rockyou.txt ssh://192.168.1.5\nhydra -l admin -P pass.txt rdp://target",
+   usedBy:"Pentesters, attackers targeting weak credentials",
+   tags:["Brute force","50+ protocols","Dictionary attack","Credential stuffing"],
+   ttags:["red","blue","amber","red"],
+   desc:"THC-Hydra is the fastest online password cracking tool supporting 50+ authentication protocols. Uses dictionary attacks (rockyou.txt has 14M passwords) or brute force. Parallelized — tests hundreds of passwords per second. Primary entry point for ransomware groups against RDP.",
+   counters:["Multi-Factor Authentication (MFA) — renders stolen passwords useless","Account lockout policy — 5 failed attempts = 15 min lockout","Fail2ban (Linux) — auto-bans IPs after repeated failures","Strong password policy — min 12 chars, complexity, no common words","Change default ports (SSH 22 → 2222) — reduces automated attack volume","VPN required for RDP — removes RDP from public internet entirely"]},
+
+  {id:"aircrackng",name:"Aircrack-ng",abbr:"AC",cat:"Wireless",color:"purple",
+   purpose:"WiFi security auditing — WPA2 handshake capture and offline cracking, WEP attack",
+   success:72,risk:"High",
+   platform:"Linux (Kali), macOS",
+   cmd:"airmon-ng start wlan0\nairodump-ng -c 6 -w capture wlan0mon\naireplay-ng -0 5 -a BSSID wlan0mon\naircrack-ng -w rockyou.txt capture.cap",
+   usedBy:"WiFi pentesters, wireless security auditors",
+   tags:["WPA2 cracking","Monitor mode","Deauth attack","Offline crack"],
+   ttags:["purple","purple","red","amber"],
+   desc:"The complete WiFi auditing suite. Works in phases: enable monitor mode → capture handshake (force reconnect via deauth) → offline dictionary attack against captured WPA2 handshake. Success depends entirely on password strength — weak passwords crack in seconds.",
+   counters:["WPA3 protocol — resistant to offline dictionary attacks (SAE handshake)","Strong random WiFi password 20+ chars — dictionary attack becomes infeasible","802.11w Management Frame Protection — blocks deauthentication attacks","Hidden SSID + MAC filtering — not security but reduces casual attacks","WPA2-Enterprise (RADIUS) — per-user certificates instead of shared password","Wireless IDS (Kismet/WIPS) — detects deauth attacks and rogue APs"]},
+
+  {id:"johntheripper",name:"John the Ripper",abbr:"JR",cat:"Password Attack",color:"red",
+   purpose:"Offline password hash cracking — dictionary, rules, brute-force against /etc/shadow, NTLM, bcrypt",
+   success:68,risk:"High",
+   platform:"Linux, Windows, macOS",
+   cmd:"john --wordlist=rockyou.txt hashes.txt\njohn --rules --wordlist=rockyou.txt shadow\njohn --show cracked.txt",
+   usedBy:"Forensic analysts, pentesters post-exploitation",
+   tags:["Hash cracking","Offline attack","Rules-based","100+ hash types"],
+   ttags:["red","amber","amber","blue"],
+   desc:"John the Ripper is the premier offline password cracking tool. Given a stolen hash file (from /etc/shadow, database dump, NTLM), it recovers original passwords. Auto-detects hash format. Rules engine generates clever mutations: 'password' → 'P@ssw0rd!'. Precursor to Hashcat.",
+   counters:["bcrypt or Argon2id for password hashing — intentionally slow, GPU-resistant","Long salt (32+ bytes) — prevents rainbow table attacks","Minimum 12 char passwords with complexity — exponentially harder to crack","Even if DB is breached, bcrypt hashes take years to crack per password","MFA as second layer — even cracked passwords fail without 2nd factor","Monitor for hash file access — /etc/shadow read by non-root = alert"]},
+
+  {id:"nikto",name:"Nikto",abbr:"NK",cat:"Web Testing",color:"amber",
+   purpose:"Web server vulnerability scanner — detects outdated software, misconfigurations, dangerous files",
+   success:70,risk:"Medium",
+   platform:"Linux, Windows",
+   cmd:"nikto -h http://target.com\nnikto -h target.com -ssl -port 443\nnikto -h target -Tuning 9",
+   usedBy:"Web security auditors, system administrators",
+   tags:["Web scanner","Misconfiguration","Outdated software","Open source"],
+   ttags:["amber","amber","red","green"],
+   desc:"Nikto performs comprehensive web server scanning — checks for 6700+ dangerous files/programs, outdated server software, server configuration issues, and HTTP server options. Generates detailed reports for web application security audits. Noisy — easily detected.",
+   counters:["Keep web server software updated (Apache, Nginx, IIS)","Remove default files and test pages from production servers","Disable directory listing (Options -Indexes in Apache)","Hide server version headers (ServerTokens Prod)","IDS/WAF to detect and block Nikto's characteristic scan patterns","Regular vulnerability scanning of your own servers before attackers do"]},
+
+  {id:"nessus",name:"Nessus",abbr:"NS",cat:"Vulnerability Scan",color:"teal",
+   purpose:"Enterprise vulnerability scanner — detects CVEs, misconfigurations, compliance gaps across network",
+   success:89,risk:"Medium",
+   platform:"Linux, Windows, macOS",
+   cmd:"Nessus Web UI: https://localhost:8834\nCreate scan → Basic Network Scan\nTarget: 192.168.1.0/24\nLaunch",
+   usedBy:"Security teams, compliance auditors, enterprise IT",
+   tags:["Enterprise scanner","CVE detection","Compliance","Authenticated scan"],
+   ttags:["teal","teal","blue","green"],
+   desc:"Nessus by Tenable is the most widely deployed vulnerability scanner globally. Performs credentialed and uncredentialed scanning, detecting 68,000+ vulnerabilities. Used for PCI-DSS compliance, SOC 2 audits, and continuous vulnerability management. Nessus Essentials is free.",
+   counters:["Vulnerability management program — patch within SLA (Critical: 24h, High: 7d)","Deploy Nessus on your own network defensively — find issues before attackers","Network segmentation — attacker needs to be on same segment to scan","Firewall rules restricting scanner access to only authorized security team IPs","SOAR integration — auto-create tickets for high/critical findings","Track mean time to patch (MTTP) as KPI — reduce it continuously"]},
+
+  {id:"cobalt",name:"Cobalt Strike",abbr:"CS",cat:"Exploitation",color:"red",
+   purpose:"Advanced red team C2 framework — beacons, lateral movement, post-exploitation, team collaboration",
+   success:91,risk:"Critical",
+   platform:"Linux, Windows (server), any (beacon)",
+   cmd:"Teamserver: ./teamserver host password profile\nBeacon: Malleable C2 profiles\nLateral: jump psexec64 target admin",
+   usedBy:"Red teams (legitimate), APT groups (malicious)",
+   tags:["C2 framework","Red team","APT-used","Commercial"],
+   ttags:["red","red","red","amber"],
+   desc:"Cobalt Strike is the most sophisticated commercial red team tool — used by both legitimate red teams and malicious APT groups. Deploys 'beacons' that communicate over HTTP/S, DNS, or SMB. Malleable C2 profiles disguise traffic as legitimate. Used in majority of major nation-state attacks including SolarWinds.",
+   counters:["EDR with memory scanning — Cobalt Strike beacons run in memory","Network monitoring: detect beaconing patterns (regular interval callbacks)","HTTPS inspection with TLS proxy — inspect encrypted C2 traffic","Threat intelligence feeds with known Cobalt Strike team server IPs/domains","YARA rules for Cobalt Strike beacon signatures in memory","DNS filtering — block C2 communication via DNS tunneling; sinkhole known C2 domains"]},
+
+  {id:"maltego",name:"Maltego",abbr:"MT",cat:"OSINT",color:"teal",
+   purpose:"Visual OSINT and link analysis — maps relationships between domains, IPs, people, organizations",
+   success:82,risk:"Medium",
+   platform:"Windows, Linux, macOS",
+   cmd:"Maltego CE: New Graph\nAdd entity: Domain → Run transforms\nInfrastructure → IP, AS, MX, NS records\nPerson → Email, social profiles",
+   usedBy:"Threat intelligence analysts, investigators, red teams",
+   tags:["OSINT","Link analysis","Visual graph","Threat intel"],
+   ttags:["teal","teal","blue","purple"],
+   desc:"Maltego is the premier OSINT and threat intelligence platform. Visualizes relationships between internet infrastructure, people, and organizations using 'transforms' — automated data lookups across 58+ data sources (Shodan, VirusTotal, social media, DNS, WHOIS). Used in investigations and pre-attack reconnaissance.",
+   counters:["Privacy-protect domain registrations (WHOIS privacy)","Minimal public LinkedIn exposure — limit employee technology stack disclosure","Remove metadata from public documents (PDF, Office files contain employee info)","Google dork your own organization — find what's publicly visible","Dark web monitoring services — alert when org data appears in breach dumps","Security awareness: employees should not post work tech stacks on public platforms"]},
+
+  {id:"openvas",name:"OpenVAS",abbr:"OV",cat:"Vulnerability Scan",color:"teal",
+   purpose:"Free enterprise vulnerability scanner — full network vulnerability assessment, CVE detection",
+   success:76,risk:"Medium",
+   platform:"Linux (Kali, Ubuntu)",
+   cmd:"gvm-setup && gvm-start\nAccess: https://localhost:9392\nCreate task → Full and fast scan",
+   usedBy:"SMBs, security teams without Nessus budget",
+   tags:["Free & open source","CVE scanning","Network audit","SCAP support"],
+   ttags:["green","teal","blue","teal"],
+   desc:"OpenVAS (Open Vulnerability Assessment System) is the open-source alternative to Nessus. Part of Greenbone Vulnerability Management (GVM). Has 80,000+ vulnerability tests, updated from community NVT feeds. Widely used by organizations that need enterprise vulnerability scanning without commercial licensing costs.",
+   counters:["Vulnerability management SLA — Critical patches within 24-48 hours","Network ACLs limiting what scanner can reach from unauthorized positions","Patch management automation (WSUS, Ansible) — reduce patching time","Risk-based prioritization — CVSS score + asset criticality + exploitability","Scan your own network weekly — find before attackers","Document exceptions with business justification and compensating controls"]},
+
+  {id:"hashcat",name:"Hashcat",abbr:"HC",cat:"Password Attack",color:"red",
+   purpose:"GPU-accelerated hash cracking — fastest offline cracker, 300+ hash types, rule engine",
+   success:74,risk:"High",
+   platform:"Linux, Windows, macOS",
+   cmd:"hashcat -m 1000 ntlm_hashes.txt rockyou.txt\nhashcat -m 3200 bcrypt.txt wordlist.txt -r best64.rule\nhashcat -a 3 md5.txt ?u?l?l?l?d?d",
+   usedBy:"Forensic analysts, pentesters, security researchers",
+   tags:["GPU-powered","300+ formats","Rule engine","Fastest cracker"],
+   ttags:["red","blue","amber","red"],
+   desc:"Hashcat uses GPU parallelism to crack password hashes orders of magnitude faster than CPU-based tools. An RTX 4090 cracks 100 billion MD5 hashes/second, 20,000 bcrypt/second. Supports rules (H@ck3r → h4ck3r mutations), combinator, and mask attacks. The reason password hashing algorithm choice is critical.",
+   counters:["Argon2id or bcrypt with high work factor — even GPU cracking takes centuries","Salt every hash — prevents rainbow tables, forces per-hash cracking","Minimum 12-char complex passwords — increases keyspace exponentially","Breached password detection — check new passwords against HaveIBeenPwned API","MFA as fallback — cracked password still useless without second factor","Never store passwords in MD5/SHA1 — use modern slow algorithms only"]},
+
+  {id:"shodan",name:"Shodan",abbr:"SH",cat:"OSINT",color:"teal",
+   purpose:"Internet-wide device search engine — finds exposed services, IoT devices, industrial systems online",
+   success:86,risk:"Medium",
+   platform:"Web-based + API",
+   cmd:"shodan search 'apache 2.2'\nshodan host 1.2.3.4\nAPI: shodan.io/api/info?key=YOUR_KEY",
+   usedBy:"Attackers for target discovery, defenders for exposure audit",
+   tags:["Internet scanning","IoT exposure","Passive recon","Defender tool too"],
+   ttags:["teal","amber","blue","green"],
+   desc:"Shodan continuously scans the entire internet and indexes all exposed services — web servers, databases, ICS/SCADA systems, cameras, routers, IoT devices. Attackers use it to find vulnerable targets. Defenders use it to discover their own exposed assets. The 'search engine for hackers'.",
+   counters:["Regularly search Shodan for your own org's IP ranges — know what's exposed","Remove unnecessary internet-facing services — VPN for admin interfaces","Change default credentials on all internet-exposed devices immediately","Firewall all management interfaces — only accessible via VPN","Industrial/SCADA systems must NEVER be directly internet-exposed","Set up Shodan Monitor alerts for your IP range — get notified of new exposures"]},
+
+  {id:"zeek",name:"Zeek (Bro)",abbr:"ZK",cat:"Defense",color:"green",
+   purpose:"Network traffic analysis framework — generates structured logs for threat hunting and anomaly detection",
+   success:84,risk:"Low (defensive)",
+   platform:"Linux",
+   cmd:"zeek -i eth0 local.zeek\nzeek -r capture.pcap\ncat /opt/zeek/logs/conn.log | zeek-cut",
+   usedBy:"Blue teams, SOC analysts, threat hunters, IR teams",
+   tags:["Defensive","Network logging","Threat hunting","Free/Open source"],
+   ttags:["green","green","teal","green"],
+   desc:"Zeek (formerly Bro) is a powerful network analysis framework that generates rich structured logs from network traffic — connection logs, DNS queries, HTTP requests, SSL certificates, file transfers, and more. Used by blue teams for threat hunting and anomaly detection. Provides network visibility that traditional firewalls lack.",
+   counters:["Deploy Zeek at network chokepoints for full visibility","Integrate Zeek logs with SIEM (Splunk, ELK) for correlation","Write custom Zeek scripts for org-specific threat detection","Use Zeek + Suricata together — Zeek for context, Suricata for signatures","Train analysts to recognize C2 beaconing in Zeek conn.log","Zeek Intel framework — feed threat intelligence IOCs for automatic detection"]},
+
+  {id:"splunk",name:"Splunk",abbr:"SP",cat:"Defense",color:"green",
+   purpose:"SIEM platform — collects, indexes, and correlates security events from all sources for threat detection",
+   success:88,risk:"Low (defensive)",
+   platform:"Linux, Windows, Cloud",
+   cmd:"index=windows EventCode=4625 | stats count by src_ip\nindex=* sourcetype=access_combined status=200 | timechart\neavg(bytes) by dest_ip",
+   usedBy:"SOC teams, security analysts, incident responders",
+   tags:["SIEM","Log correlation","Industry standard","SPL queries"],
+   ttags:["green","green","blue","teal"],
+   desc:"Splunk is the market-leading SIEM (Security Information and Event Management) platform. Ingests logs from thousands of sources, enables complex SPL (Splunk Processing Language) queries for threat hunting, dashboards for security monitoring, and SOAR integration for automated response. Used in 90% of Fortune 500 SOCs.",
+   counters:["Deploy Splunk with security content (Splunk ES, ESCU) for out-of-box detections","Fine-tune alert rules to reduce false positives — analyst fatigue leads to missed alerts","Ingest ALL relevant log sources — gaps in logging = gaps in detection","Set up correlation rules for multi-stage attack detection (kill chain)","Integrate with SOAR for automated containment (isolate endpoint on detection)","Regular threat hunting exercises using Splunk — don't rely only on automated alerts"]},
+
+  {id:"snort",name:"Snort / Suricata",abbr:"SN",cat:"Defense",color:"green",
+   purpose:"Network Intrusion Detection/Prevention — real-time traffic analysis against 50,000+ rules",
+   success:81,risk:"Low (defensive)",
+   platform:"Linux, Windows",
+   cmd:"snort -A console -c /etc/snort/snort.conf -i eth0\nsuricata -c /etc/suricata/suricata.yaml -i eth0\ncat /var/log/suricata/fast.log",
+   usedBy:"SOC teams, network security engineers, ISPs",
+   tags:["NIDS/NIPS","Open source","Rule-based","Inline prevention"],
+   ttags:["green","green","blue","teal"],
+   desc:"Snort (by Cisco) and Suricata are the leading open-source IDS/IPS tools. Use signature rules (50,000+ community rules) to detect malicious traffic patterns — exploit attempts, C2 communication, malware downloads, port scans. In IPS mode, inline blocking of detected threats. Suricata is multi-threaded and supports Lua scripting.",
+   counters:["Keep rule sets updated daily (Emerging Threats, Snort community rules)","Tune rules to reduce false positives for your environment","Deploy in IPS mode (inline) for automatic blocking, not just alerting","Combine with Zeek for behavioral context around Suricata signature alerts","Use encrypted traffic analysis for TLS — JA3 fingerprinting for C2 detection","Test rules regularly — run attack simulations to verify detection coverage"]},
+
+  {id:"volatility",name:"Volatility",abbr:"VL",cat:"Forensics",color:"purple",
+   purpose:"Memory forensics — analyze RAM dumps to find malware, encryption keys, running processes, network connections",
+   success:79,risk:"Low (defensive)",
+   platform:"Linux, Windows, macOS",
+   cmd:"vol.py -f memory.dmp imageinfo\nvol.py -f mem.dmp pslist\nvol.py -f mem.dmp netscan\nvol.py -f mem.dmp malfind",
+   usedBy:"Incident responders, forensic analysts, malware analysts",
+   tags:["Memory forensics","Malware analysis","IR essential","Fileless detection"],
+   ttags:["purple","purple","teal","green"],
+   desc:"Volatility is the premier open-source memory forensics framework. Analyzes RAM dumps to reveal: running processes (including hidden ones), network connections at time of capture, encryption keys in memory, injected DLLs, fileless malware artifacts, and browser passwords. Critical for detecting advanced malware that lives only in RAM.",
+   counters:["Capture memory images during incidents for forensic analysis","Use EDR with memory scanning capability as proactive defense","Memory integrity protection (Kernel Patch Protection, Secure Kernel)","Volatility supports incident response — train IR team on its use","Integrate memory forensics into IR playbooks for malware investigations","Combine with disk forensics (Autopsy) for complete picture"]},
+
+  {id:"mimikatz",name:"Mimikatz",abbr:"MK",cat:"Post-Exploitation",color:"red",
+   purpose:"Windows credential extraction — dumps LSASS memory for passwords, NTLM hashes, Kerberos tickets",
+   success:77,risk:"Critical",
+   platform:"Windows",
+   cmd:"privilege::debug\nsekurlsa::logonpasswords\nlsadump::sam\nlsadump::dcsync /domain:corp /user:administrator",
+   usedBy:"Red teams, APT groups, ransomware operators for lateral movement",
+   tags:["Credential dump","LSASS","Pass-the-hash","DCSync"],
+   ttags:["red","red","red","red"],
+   desc:"Mimikatz is the most impactful post-exploitation tool ever created. Extracts plaintext passwords, NTLM hashes, and Kerberos tickets from Windows LSASS process memory. Enables Pass-the-Hash (authenticate with hash without cracking), DCSync (replicate AD password hashes), and Golden/Silver Ticket attacks. Used in virtually every major Windows breach.",
+   counters:["Credential Guard (Windows 10+) — stores credentials in isolated VM, LSASS cannot be dumped","Protected Users security group — prevents NTLM auth, forces Kerberos AES","Privileged Access Workstations (PAW) — admin tasks only from dedicated hardened systems","Disable WDigest authentication (prevents plaintext passwords in LSASS)","Monitor LSASS access with EDR — any process reading LSASS memory = alert","Tiered admin model — Tier 0 (Domain Admins) never log into regular workstations"]},
+
+  {id:"gophish",name:"GoPhish",abbr:"GP",cat:"Social Engineering",color:"amber",
+   purpose:"Phishing simulation framework — create realistic phishing campaigns to test employee awareness",
+   success:83,risk:"High",
+   platform:"Linux, Windows",
+   cmd:"./gophish\nAccess: https://localhost:3333\nCreate campaign → email template + landing page\nLaunch → track clicks, credentials",
+   usedBy:"Security awareness teams, red teams, attackers",
+   tags:["Phishing sim","Awareness training","Email testing","Campaign tracking"],
+   ttags:["amber","green","blue","teal"],
+   desc:"GoPhish is an open-source phishing simulation framework used to test employee susceptibility to phishing attacks. Creates realistic phishing emails, tracks who opened, clicked, and submitted credentials. Used legitimately by security teams for awareness training and by attackers for real credential theft campaigns.",
+   counters:["Regular phishing simulation training — employees who click get immediate training","Email authentication: SPF + DKIM + DMARC — prevents domain spoofing","Advanced email filtering (Proofpoint, Mimecast) — URL rewriting, sandbox analysis","Report suspicious email button + fast response from security team","MFA on all accounts — even phished credentials fail without second factor","Anti-phishing browser extensions and DNS filtering for known phishing domains"]},
+];
+
+const CATS = ["All", "Reconnaissance", "Exploitation", "Web Testing", "Password Attack", "Wireless", "OSINT", "Vulnerability Scan", "Defense", "Forensics", "Post-Exploitation", "Social Engineering"];
+
+const COLOR_MAP = {
+  blue:   {bg:"#E6F1FB", border:"#185FA5", text:"#0C447C", bar:"#378ADD"},
+  red:    {bg:"#FCEBEB", border:"#A32D2D", text:"#791F1F", bar:"#E24B4A"},
+  amber:  {bg:"#FAEEDA", border:"#854F0B", text:"#633806", bar:"#BA7517"},
+  teal:   {bg:"#E1F5EE", border:"#0F6E56", text:"#085041", bar:"#1D9E75"},
+  green:  {bg:"#EAF3DE", border:"#3B6D11", text:"#27500A", bar:"#639922"},
+  purple: {bg:"#EEEDFE", border:"#534AB7", text:"#3C3489", bar:"#7F77DD"},
+};
+
+const TAG_COLOR_MAP = {blue:"tag-blue",red:"tag-red",green:"tag-green",amber:"tag-amber",purple:"tag-purple",teal:"tag-teal"};
+
+let activeCat = "All";
+let activeToolId = null;
+
+function buildPills() {
+  const wrap = document.getElementById("catPills");
+  CATS.forEach(c => {
+    const b = document.createElement("button");
+    b.className = "pill" + (c === "All" ? " on" : "");
+    b.textContent = c;
+    b.onclick = () => { activeCat = c; filterTools(); document.querySelectorAll(".pill").forEach(p => p.classList.toggle("on", p.textContent === c)); };
+    wrap.appendChild(b);
+  });
+}
+
+function getRiskColor(r) {
+  if (r === "Critical") return {bg:"#FCEBEB",color:"#791F1F"};
+  if (r === "High") return {bg:"#FAEEDA",color:"#633806"};
+  if (r === "Medium") return {bg:"#E6F1FB",color:"#0C447C"};
+  return {bg:"#EAF3DE",color:"#27500A"};
+}
+
+function getBarColor(pct) {
+  if (pct >= 85) return "#E24B4A";
+  if (pct >= 75) return "#BA7517";
+  if (pct >= 65) return "#1D9E75";
+  return "#378ADD";
+}
+
+function filterTools() {
+  const q = document.getElementById("searchInput").value.toLowerCase();
+  const filtered = TOOLS.filter(t => {
+    const matchCat = activeCat === "All" || t.cat === activeCat;
+    const matchQ = !q || t.name.toLowerCase().includes(q) || t.purpose.toLowerCase().includes(q) || t.cat.toLowerCase().includes(q);
+    return matchCat && matchQ;
+  });
+  renderStats(filtered);
+  renderGrid(filtered);
+  if (activeToolId) {
+    const still = filtered.find(t => t.id === activeToolId);
+    if (!still) { document.getElementById("detailPanel").style.display = "none"; activeToolId = null; }
+  }
+}
+
+function renderStats(list) {
+  const wrap = document.getElementById("statsRow");
+  const avg = list.length ? Math.round(list.reduce((s, t) => s + t.success, 0) / list.length) : 0;
+  const crit = list.filter(t => t.risk === "Critical").length;
+  const def = list.filter(t => t.cat === "Defense" || t.cat === "Forensics").length;
+  wrap.innerHTML = `
+    <div class="stat"><div class="stat-val">${list.length}</div><div class="stat-lbl">Tools shown</div></div>
+    <div class="stat"><div class="stat-val">${avg}%</div><div class="stat-lbl">Avg success rate</div></div>
+    <div class="stat"><div class="stat-val">${crit}</div><div class="stat-lbl">Critical risk</div></div>
+    <div class="stat"><div class="stat-val">${def}</div><div class="stat-lbl">Defensive tools</div></div>`;
+}
+
+function renderGrid(list) {
+  const grid = document.getElementById("toolsGrid");
+  if (!list.length) { grid.innerHTML = '<div class="empty">No tools match your search.</div>'; return; }
+  grid.innerHTML = "";
+  list.forEach(t => {
+    const cs = COLOR_MAP[t.color];
+    const bar = getBarColor(t.success);
+    const card = document.createElement("div");
+    card.className = "tool-card" + (t.id === activeToolId ? " active" : "");
+    card.id = "tc-" + t.id;
+    if (t.id === activeToolId) { card.style.borderColor = cs.border; }
+    card.innerHTML = `
+      <div class="tc-head">
+        <div>
+          <div class="tc-name">${t.name}</div>
+          <div class="tc-cat">${t.cat}</div>
+        </div>
+        <div class="tc-icon" style="background:${cs.bg};color:${cs.text}">${t.abbr}</div>
+      </div>
+      <div class="tc-purpose">${t.purpose}</div>
+      <div class="rate-row">
+        <div class="rate-bar-bg"><div class="rate-bar-fill" style="width:${t.success}%;background:${bar}"></div></div>
+        <span class="rate-pct" style="color:${bar}">${t.success}%</span>
+      </div>`;
+    card.onclick = () => selectTool(t);
+    grid.appendChild(card);
+  });
+}
+
+function selectTool(t) {
+  document.querySelectorAll(".tool-card").forEach(c => {
+    c.classList.remove("active");
+    c.style.borderColor = "";
+    c.style.borderWidth = "";
+  });
+  const cs = COLOR_MAP[t.color];
+  const card = document.getElementById("tc-" + t.id);
+  if (card) { card.classList.add("active"); card.style.borderColor = cs.border; card.style.borderWidth = "1.5px"; }
+  activeToolId = t.id;
+  renderDetail(t);
+  const dp = document.getElementById("detailPanel");
+  dp.style.display = "block";
+  setTimeout(() => dp.scrollIntoView({behavior:"smooth",block:"nearest"}), 60);
+}
+
+function renderDetail(t) {
+  const cs = COLOR_MAP[t.color];
+  const bar = getBarColor(t.success);
+  const rc = getRiskColor(t.risk);
+  const tagHTML = t.tags.map((tag, i) => `<span class="tag ${TAG_COLOR_MAP[t.ttags[i]] || 'tag-blue'}">${tag}</span>`).join("");
+  const counterHTML = t.counters.map(c => `<li><div class="ci"><svg viewBox="0 0 8 8" fill="none" stroke="#3B6D11" stroke-width="1.5"><polyline points="1,4 3,6 7,2"/></svg></div><span>${c}</span></li>`).join("");
+  document.getElementById("detailPanel").innerHTML = `
+    <div class="dp-header">
+      <div class="dp-icon-big" style="background:${cs.bg};color:${cs.text};font-size:14px">${t.abbr}</div>
+      <div style="flex:1">
+        <div class="dp-title">${t.name}</div>
+        <div class="dp-sub">${t.cat} &nbsp;·&nbsp; ${t.platform}</div>
+      </div>
+      <span class="risk-badge" style="background:${rc.bg};color:${rc.color}">${t.risk} risk</span>
+    </div>
+    <div class="dp-body">
+      <div class="dp-col">
+        <div class="dp-section">
+          <div class="dp-lbl">About</div>
+          <div class="dp-text">${t.desc}</div>
+        </div>
+        <div class="dp-section">
+          <div class="dp-lbl">Used by</div>
+          <div class="dp-text">${t.usedBy}</div>
+        </div>
+        <div class="dp-section">
+          <div class="tags">${tagHTML}</div>
+        </div>
+        <div class="dp-section">
+          <div class="dp-lbl">Success / effectiveness rate</div>
+          <div class="rate-big"><span class="rate-num" style="color:${bar}">${t.success}%</span><span class="rate-lbl">in real-world scenarios</span></div>
+          <div class="rate-bar-big"><div class="rate-bar-big-fill" style="width:${t.success}%;background:${bar}"></div></div>
+          <div style="font-size:12px;color:var(--color-text-secondary)">Based on industry pentest reports &amp; CVE exploitation data</div>
+        </div>
+        <div class="dp-section">
+          <div class="dp-lbl">Common commands / usage</div>
+          <div class="cmd-box">${t.cmd}</div>
+        </div>
+        <button class="ask-btn" onclick="sendPrompt('${t.name} ke baare mein aur detail mein batao — exam ke liye notes')">Deep dive — ${t.name} ↗</button>
+      </div>
+      <div class="dp-col">
+        <div class="dp-section">
+          <div class="dp-lbl">How to counter / defend against this tool</div>
+          <ul class="counter-list">${counterHTML}</ul>
+        </div>
+      </div>
+    </div>`;
+}
+
+buildPills();
+filterTools();
+</script>
